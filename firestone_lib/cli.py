@@ -17,8 +17,6 @@ def init_logging(pkg: str, name: str) -> None:
     :param str name: the name of the file to load for logging.
     """
     log_conf = pkg_resources.resource_stream(pkg, name)
-    print(f"log_conf: {log_conf}")
-    print(f"log_conf.name: {log_conf.name}")
 
     try:
         logging.config.fileConfig(log_conf.name)
