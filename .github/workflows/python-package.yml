@@ -32,7 +32,7 @@ jobs:
         poetry build
     - name: pylint and pycodestyle
       run: |
-        poetry run pylint .
+        poetry run pylint firestone_lib test
         poetry run pycodestyle --config .pycodestyle .
     - name: Test with pytest
       run: |
