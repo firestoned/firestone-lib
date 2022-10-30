@@ -3,7 +3,7 @@
 
 # firestone-lib
 
-Thus library is primarily used by the firestone and anyone using the firestone project.
+This library is primarily used by the firestone project and anyone using the firestone project.
 
 # building and testing
 
