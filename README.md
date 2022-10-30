@@ -1,4 +1,4 @@
-![PR Build](https://github.com/ebourgeois/firestone-lib/actions/workflows/python-package.yml/badge.svg)
+![PR Build](https://github.com/ebourgeois/firestone-lib/actions/workflows/pr.yml/badge.svg)
 
 
 # firestone-lib
