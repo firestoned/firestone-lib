@@ -1,2 +1,2 @@
 # firestone-lib
- Library for users of firestone project
+Thus library is primarily used by the firestone and anyone using the firestone project.
