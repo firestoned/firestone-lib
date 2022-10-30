@@ -8,5 +8,5 @@ Thus library is primarily used by the firestone and anyone using the firestone p
 brew install poetry
 poetry install
 poetry build
-pytest test
+poetry run pytest test
 ```
