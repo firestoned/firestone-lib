@@ -34,3 +34,14 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 100
 target-version = ["py37", "py310"]
+
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length = 150
+good-names = [
+    "fh"
+]
+max-args = 8
+disable = """
+    logging-fstring-interpolation,
+    fixme
+"""
