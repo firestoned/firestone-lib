@@ -58,7 +58,7 @@ class CommaDelimitedList(click.ParamType):
 class FromJSON(click.ParamType):
     """Converts a string from the CLI as a parameter to JSON object."""
 
-    name = "String to JSON onject, optionally via a file, using @file.json"
+    name = "String to JSON object, optionally via a file, using @file.json"
 
     def __init__(self, decoder=None):
         self.decoder = decoder or json.JSONDecoder()
@@ -127,6 +127,8 @@ PathList = CommaDelimitedList(item_type=click.Path(exists=True))
 StrList = CommaDelimitedList()
 
 StrDict = KeyValue()
+
+AnyDict = FromJSON()
 
 
 __all__ = ["init_logging", "KeyValue", "IntList", "PathList", "StrList", "StrDict"]
