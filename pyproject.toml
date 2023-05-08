@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "firestone-lib"
-version = "0.1.5"
-description = "Library to help build OpneAPI, AsyncAPI and gRPC specs based off one or more resource json schema files"
+version = "0.1.6"
+description = "Library to help build OpenAPI, AsyncAPI and gRPC specs based off one or more resource json schema files"
 authors = ["Erick Bourgeois <erick@jeb.ca>"]
 license = "Apache 2.0"
 readme = "README.md"

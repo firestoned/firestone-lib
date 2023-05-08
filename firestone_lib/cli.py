@@ -11,6 +11,12 @@ import time
 
 import click
 import pkg_resources
+import yaml
+
+try:
+    from yaml import CLoader as Loader
+except ImportError:
+    from yaml import Loader
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -55,10 +61,10 @@ class CommaDelimitedList(click.ParamType):
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
 
-class FromJSON(click.ParamType):
-    """Converts a string from the CLI as a parameter to JSON object."""
+class FromJsonOrYaml(click.ParamType):
+    """Converts a string from the CLI as a parameter to JSON or YAML object."""
 
-    name = "String to JSON object, optionally via a file, using @file.json"
+    name = "String to JSON or YAML object, optionally via a file, using @file.json"
 
     def __init__(self, decoder=None):
         self.decoder = decoder or json.JSONDecoder()
@@ -72,12 +78,29 @@ class FromJSON(click.ParamType):
 
         if value.startswith("@"):
             filename = value[1:]
-            _LOGGER.debug(f"Reading JSON data from file {filename}")
+            _LOGGER.debug(f"Reading data from file {filename}...")
             with io.open(filename, "r", encoding="utf-8") as fh:
-                return json.load(fh)
+                try:
+                    _LOGGER.debug("Trying json.load")
+                    print("trying json")
+                    return json.load(fh)
+                # pylint: disable=broad-exception-caught
+                except Exception:
+                    pass
+                try:
+                    _LOGGER.debug("Trying yaml.load")
+                    return yaml.load(fh, Loader=Loader)
+                # pylint: disable=broad-exception-caught
+                except Exception:
+                    self.fail(f"{value} is not in JSON or YAML format", param, ctx)
 
         raw_str = rf"{value}"
-        return self.decoder.decode(raw_str)
+        try:
+            return self.decoder.decode(raw_str)
+        except json.decoder.JSONDecodeError:
+            pass
+
+        return yaml.load(value, Loader=Loader)
 
 
 class KeyValue(click.ParamType):
@@ -96,7 +119,7 @@ class KeyValue(click.ParamType):
         """Convert this param value to a dict, given the str."""
         if value and isinstance(value, str) and value.startswith("{"):
             try:
-                json_param_type = FromJSON()
+                json_param_type = FromJsonOrYaml()
                 return json_param_type.convert(value, param, ctx)
             # pylint: disable=broad-except
             except Exception:
@@ -128,7 +151,16 @@ StrList = CommaDelimitedList()
 
 StrDict = KeyValue()
 
-AnyDict = FromJSON()
+AnyDict = FromJsonOrYaml()
 
 
-__all__ = ["init_logging", "KeyValue", "IntList", "PathList", "StrList", "StrDict"]
+__all__ = [
+    "init_logging",
+    "KeyValue",
+    "FromJsonOrYaml",
+    "IntList",
+    "PathList",
+    "StrList",
+    "StrDict",
+    "AnyDict",
+]
