@@ -24,10 +24,10 @@ class CliTest(unittest.TestCase):
         """Test firestone_lib.cli.KeyValue convert a python string."""
         keyval = cli.KeyValue()
 
-        data = keyval.convert('foo=bar', "foo", None)
+        data = keyval.convert("foo=bar", "foo", None)
         self.assertEqual(data, {"foo": "bar"})
 
-        data = keyval.convert('foo=bar,baz=blah', "foo", None)
+        data = keyval.convert("foo=bar,baz=blah", "foo", None)
         self.assertEqual(data, {"foo": "bar", "baz": "blah"})
 
     def test_key_value_as_json(self):
@@ -63,6 +63,20 @@ class CliTest(unittest.TestCase):
         keyval = cli.KeyValue()
 
         data = keyval.convert({"foo": "bar"}, "foo", None)
+        self.assertEqual(data, {"foo": "bar"})
+
+    def test_loading_json(self):
+        """Test firestone_lib.cli.FromJsonOrYaml convert from JSON to dict."""
+        from_json_or_yaml = cli.FromJsonOrYaml()
+
+        data = from_json_or_yaml.convert('{"foo": "bar"}', "foo", None)
+        self.assertEqual(data, {"foo": "bar"})
+
+    def test_loading_yaml(self):
+        """Test firestone_lib.cli.FromJsonOrYaml convert from JSON to dict."""
+        from_json_or_yaml = cli.FromJsonOrYaml()
+
+        data = from_json_or_yaml.convert("foo: bar", "foo", None)
         self.assertEqual(data, {"foo": "bar"})
 
 
