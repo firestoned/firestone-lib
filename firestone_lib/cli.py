@@ -6,10 +6,12 @@ import io
 import json
 import logging
 import logging.config
+import os
 import re
 import time
 
 import click
+import jinja2
 import pkg_resources
 import yaml
 
@@ -66,9 +68,6 @@ class FromJsonOrYaml(click.ParamType):
 
     name = "String to JSON or YAML object, optionally via a file, using @file.json"
 
-    def __init__(self, decoder=None):
-        self.decoder = decoder or json.JSONDecoder()
-
     def convert(self, value, param, ctx):
         """Convert a string from the CLI as a parameter to JSON object."""
         if value == "-":
@@ -76,31 +75,31 @@ class FromJsonOrYaml(click.ParamType):
         if not isinstance(value, str):
             return value
 
+        raw_str = value
         if value.startswith("@"):
             filename = value[1:]
             _LOGGER.debug(f"Reading data from file {filename}...")
             with io.open(filename, "r", encoding="utf-8") as fh:
-                try:
-                    _LOGGER.debug("Trying json.load")
-                    print("trying json")
-                    return json.load(fh)
-                # pylint: disable=broad-exception-caught
-                except Exception:
-                    pass
-                try:
-                    _LOGGER.debug("Trying yaml.load")
-                    return yaml.load(fh, Loader=Loader)
-                # pylint: disable=broad-exception-caught
-                except Exception:
-                    self.fail(f"{value} is not in JSON or YAML format", param, ctx)
+                raw_str = fh.readlines()
 
-        raw_str = rf"{value}"
+        template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(raw_str)
+        data = template.render(**os.environ)
+
         try:
-            return self.decoder.decode(raw_str)
-        except json.decoder.JSONDecodeError:
+            _LOGGER.debug("Trying json.load")
+            return json.loads(data)
+        # pylint: disable=broad-exception-caught
+        except Exception:
             pass
 
-        return yaml.load(value, Loader=Loader)
+        try:
+            _LOGGER.debug("Trying yaml.load")
+            return yaml.load(data, Loader=Loader)
+        # pylint: disable=broad-exception-caught
+        except Exception:
+            self.fail(f"{value} is not in JSON or YAML format", param, ctx)
+
+        return data
 
 
 class KeyValue(click.ParamType):

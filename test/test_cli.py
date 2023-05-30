@@ -1,6 +1,7 @@
 """
 Test the firestone_lib.cli module.
 """
+import os
 
 import unittest
 from unittest import mock
@@ -73,10 +74,18 @@ class CliTest(unittest.TestCase):
         self.assertEqual(data, {"foo": "bar"})
 
     def test_loading_yaml(self):
-        """Test firestone_lib.cli.FromJsonOrYaml convert from JSON to dict."""
+        """Test firestone_lib.cli.FromJsonOrYaml convert from YAML to dict."""
         from_json_or_yaml = cli.FromJsonOrYaml()
 
         data = from_json_or_yaml.convert("foo: bar", "foo", None)
+        self.assertEqual(data, {"foo": "bar"})
+
+    def test_loading_yaml_with_jinja(self):
+        """Test firestone_lib.cli.FromJsonOrYaml convert from YAML to dict wiht os.environ."""
+        from_json_or_yaml = cli.FromJsonOrYaml()
+
+        os.environ["BAR"] = "bar"
+        data = from_json_or_yaml.convert("foo: {{ BAR }}", "foo", None)
         self.assertEqual(data, {"foo": "bar"})
 
 
