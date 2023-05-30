@@ -80,7 +80,7 @@ class FromJsonOrYaml(click.ParamType):
             filename = value[1:]
             _LOGGER.debug(f"Reading data from file {filename}...")
             with io.open(filename, "r", encoding="utf-8") as fh:
-                raw_str = fh.readlines()
+                raw_str = fh.read()
 
         template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(raw_str)
         data = template.render(**os.environ)
