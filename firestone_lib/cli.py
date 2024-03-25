@@ -1,7 +1,9 @@
 """
 Common CLI utility functions for firestone and firestone apps.
 """
+
 import configparser
+import importlib.resources
 import io
 import json
 import logging
@@ -12,7 +14,6 @@ import time
 
 import click
 import jinja2
-import pkg_resources
 import yaml
 
 try:
@@ -29,7 +30,7 @@ def init_logging(pkg: str, name: str) -> None:
     :param str pkg: the package name where the logging config is located.
     :param str name: the name of the file to load for logging.
     """
-    log_conf = pkg_resources.resource_stream(pkg, name)
+    log_conf = importlib.resources.files(pkg).joinpath(name).open("r", encoding="utf-8")
 
     try:
         logging.config.fileConfig(log_conf.name)

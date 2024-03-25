@@ -1,6 +1,7 @@
 """
 Test the firestone_lib.cli module.
 """
+
 import os
 
 import unittest
@@ -15,10 +16,10 @@ class CliTest(unittest.TestCase):
     def test_init_logger_bad_filename(self):
         """Test firestone_lib.cli.init_logger a bad filename/data into fileConfig."""
 
-        with mock.patch("pkg_resources.resource_stream") as mocker:
+        with mock.patch("importlib.abc.Traversable") as mocker:
             instance = mocker.return_value
-            instance.name = "/tmp/XXX1234"
-            with self.assertRaises(KeyError):
+            instance.open.name = "/tmp/XXX1234"
+            with self.assertRaises(Exception):
                 cli.init_logging("foo.bar", "baz.conf")
 
     def test_key_value_as_py(self):
