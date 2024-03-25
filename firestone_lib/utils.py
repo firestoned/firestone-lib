@@ -1,6 +1,7 @@
 """
 Utility module for firestone project.
 """
+
 import functools
 
 import asyncio
