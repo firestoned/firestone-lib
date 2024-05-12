@@ -64,10 +64,10 @@ class CommaDelimitedList(click.ParamType):
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
 
-class FromJsonOrYaml(click.ParamType):
-    """Converts a string from the CLI as a parameter to JSON or YAML object."""
+class SlurpStrOrFile(click.ParamType):
+    """Slurp a string or optionally via a file, using @file.json and run jinja2 templating"""
 
-    name = "String to JSON or YAML object, optionally via a file, using @file.json"
+    name = "Slurp a string or optionally via a file, using @file.json and run jinja2 templating"
 
     def convert(self, value, param, ctx):
         """Convert a string from the CLI as a parameter to JSON object."""
@@ -85,6 +85,19 @@ class FromJsonOrYaml(click.ParamType):
 
         template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(raw_str)
         data = template.render(**os.environ)
+
+        return data
+
+
+class FromJsonOrYaml(SlurpStrOrFile):
+    """Converts a string of JSON or YAML from the CLI as a parameter to python struct."""
+
+    name = "Converts a string of JSON or YAML from the CLI as a parameter to python struct."
+
+    def convert(self, value, param, ctx):
+        """Converts a string of JSON or YAML from the CLI as a parameter to python struct."""
+
+        data = super().convert(value, param, ctx)
 
         try:
             _LOGGER.debug("Trying json.load")
