@@ -82,12 +82,20 @@ class CliTest(unittest.TestCase):
         self.assertEqual(data, {"foo": "bar"})
 
     def test_loading_yaml_with_jinja(self):
-        """Test firestone_lib.cli.FromJsonOrYaml convert from YAML to dict wiht os.environ."""
+        """Test firestone_lib.cli.FromJsonOrYaml convert from YAML to dict with os.environ."""
         from_json_or_yaml = cli.FromJsonOrYaml()
 
         os.environ["BAR"] = "bar"
         data = from_json_or_yaml.convert("foo: {{ BAR }}", "foo", None)
         self.assertEqual(data, {"foo": "bar"})
+
+    def test_loading_raw_with_jinja(self):
+        """Test firestone_lib.cli.SlurpStrOrFile convert from YAML to dict with os.environ."""
+        slurp_str_or_file = cli.SlurpStrOrFile()
+
+        os.environ["BAR"] = "bar"
+        data = slurp_str_or_file.convert("foo: {{ BAR }}", "foo", None)
+        self.assertEqual(data, "foo: bar")
 
 
 if __name__ == "__main__":
