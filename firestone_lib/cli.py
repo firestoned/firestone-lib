@@ -40,7 +40,7 @@ def init_logging(pkg: str, name: str) -> None:
 
 
 class CommaDelimitedList(click.ParamType):
-    """A custom click parameter type tha takes comma delimited list of items."""
+    """A custom click parameter type that takes comma delimited list of items."""
 
     name = "Comma delimited list"
 
@@ -117,7 +117,7 @@ class FromJsonOrYaml(SlurpStrOrFile):
 
 
 class KeyValue(click.ParamType):
-    """A custom click parameter type tha takes key/value items."""
+    """A custom click parameter type that takes key/value items."""
 
     name = "Key and value click type" ""
 
@@ -156,6 +156,25 @@ class KeyValue(click.ParamType):
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
 
+# pylint: disable=inconsistent-return-statements
+class RegexParser(click.ParamType):
+    """A custom click parameter type that prepares a string for regex comparison."""
+
+    name = "Regex Parser"
+
+    def convert(self, value: str, param: str, ctx):
+        """Convert the param value to a clean string ready for regex matching."""
+        try:
+            if isinstance(value, str):
+                # Trim spaces and ensure it's a properly formatted string
+                cleaned_value = value.strip()
+                cleaned_value = re.escape(cleaned_value)
+
+            return cleaned_value
+        except AttributeError:
+            self.fail(f"{value} is not a valid string", param, ctx)
+
+
 IntList = CommaDelimitedList(item_type=click.INT)
 
 PathList = CommaDelimitedList(item_type=click.Path(exists=True))
@@ -166,6 +185,7 @@ StrDict = KeyValue()
 
 AnyDict = FromJsonOrYaml()
 
+Regex = RegexParser()
 
 __all__ = [
     "init_logging",
@@ -176,4 +196,5 @@ __all__ = [
     "StrList",
     "StrDict",
     "AnyDict",
+    "Regex",
 ]
