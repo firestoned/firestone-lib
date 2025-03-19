@@ -59,7 +59,9 @@ class CommaDelimitedList(click.ParamType):
             return value
 
         try:
-            return [self.item_type.convert(item, param, ctx) for item in value.split(",")]
+            return [
+                self.item_type.convert(item, param, ctx) for item in value.split(",")
+            ]
         except AttributeError:
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
@@ -119,7 +121,7 @@ class FromJsonOrYaml(SlurpStrOrFile):
 class KeyValue(click.ParamType):
     """A custom click parameter type tha takes key/value items."""
 
-    name = "Key and value click type" ""
+    name = "Key and value click type"
 
     def __init__(self, item_type=click.STRING, inner_sep=r"=", outer_sep=r","):
         """Constructor for a new delimited dict."""
@@ -156,6 +158,28 @@ class KeyValue(click.ParamType):
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
 
+class RegexCompare(click.ParamType):
+    """A custom click parameter type that accepts a regex and a string and compares the two."""
+
+    name = "Regex compare"
+
+    def __init__(self, regex_pattern=click.STRING):
+        """Constructor for RegexCompare that takes a regex pattern."""
+        self.regex_pattern = re.compile(regex_pattern)
+
+    # pylint: disable=inconsistent-return-statements
+    def convert(self, value: str, param: str, ctx):
+        """Convert this param value to a match or fail based on regex comparison."""
+
+        if self.regex_pattern.match(value):
+            return value
+        if not self.regex_pattern.match(value):
+            # Should we use "click.BadParameter" instead of "AttributeError"?
+            raise AttributeError(
+                f"{value} does not match regex pattern {self.regex_pattern}"
+            )
+
+
 IntList = CommaDelimitedList(item_type=click.INT)
 
 PathList = CommaDelimitedList(item_type=click.Path(exists=True))
@@ -166,6 +190,7 @@ StrDict = KeyValue()
 
 AnyDict = FromJsonOrYaml()
 
+Regex = RegexCompare(regex_pattern=click.STRING)
 
 __all__ = [
     "init_logging",
@@ -176,4 +201,5 @@ __all__ = [
     "StrList",
     "StrDict",
     "AnyDict",
+    "Regex",
 ]
