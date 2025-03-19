@@ -158,23 +158,23 @@ class KeyValue(click.ParamType):
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
 
-class RegexCompare(click.ParamType):
-    """A custom click parameter type that accepts a regex and a string and compares the two."""
+class RegexValidator(click.ParamType):
+    """A custom click parameter type that accepts a regex pattern and a string
+    and validates that the string matches the regex pattern."""
 
-    name = "Regex compare"
+    name = "Regex Validator"
 
-    def __init__(self, regex_pattern=click.STRING):
+    def __init__(self, regex_pattern: click.STRING = None):
         """Constructor for RegexCompare that takes a regex pattern."""
         self.regex_pattern = re.compile(regex_pattern)
 
     # pylint: disable=inconsistent-return-statements
     def convert(self, value: str, param: str, ctx):
-        """Convert this param value to a match or fail based on regex comparison."""
+        """Validate this param value to a match or fail the regex pattern."""
 
         if self.regex_pattern.match(value):
             return value
         if not self.regex_pattern.match(value):
-            # Should we use "click.BadParameter" instead of "AttributeError"?
             raise AttributeError(
                 f"{value} does not match regex pattern {self.regex_pattern}"
             )
@@ -190,7 +190,6 @@ StrDict = KeyValue()
 
 AnyDict = FromJsonOrYaml()
 
-Regex = RegexCompare(regex_pattern=click.STRING)
 
 __all__ = [
     "init_logging",
@@ -201,5 +200,5 @@ __all__ = [
     "StrList",
     "StrDict",
     "AnyDict",
-    "Regex",
+    "RegexValidator",
 ]
