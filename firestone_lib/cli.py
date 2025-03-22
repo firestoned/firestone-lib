@@ -59,7 +59,9 @@ class CommaDelimitedList(click.ParamType):
             return value
 
         try:
-            return [self.item_type.convert(item, param, ctx) for item in value.split(",")]
+            return [
+                self.item_type.convert(item, param, ctx) for item in value.split(",")
+            ]
         except AttributeError:
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
@@ -119,7 +121,7 @@ class FromJsonOrYaml(SlurpStrOrFile):
 class KeyValue(click.ParamType):
     """A custom click parameter type tha takes key/value items."""
 
-    name = "Key and value click type" ""
+    name = "Key and value click type"
 
     def __init__(self, item_type=click.STRING, inner_sep=r"=", outer_sep=r","):
         """Constructor for a new delimited dict."""
@@ -156,6 +158,28 @@ class KeyValue(click.ParamType):
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
 
+class RegexValidator(click.ParamType):
+    """A custom click parameter type that accepts a regex pattern and a string
+    and validates that the string matches the regex pattern."""
+
+    name = "Regex Validator"
+
+    def __init__(self, regex_pattern: click.STRING = None):
+        """Constructor for RegexCompare that takes a regex pattern."""
+        self.regex_pattern = re.compile(regex_pattern)
+
+    # pylint: disable=inconsistent-return-statements
+    def convert(self, value: str, param: str, ctx):
+        """Validate this param value to a match or fail the regex pattern."""
+
+        if self.regex_pattern.match(value):
+            return value
+        if not self.regex_pattern.match(value):
+            raise AttributeError(
+                f"{value} does not match regex pattern {self.regex_pattern}"
+            )
+
+
 IntList = CommaDelimitedList(item_type=click.INT)
 
 PathList = CommaDelimitedList(item_type=click.Path(exists=True))
@@ -176,4 +200,5 @@ __all__ = [
     "StrList",
     "StrDict",
     "AnyDict",
+    "RegexValidator",
 ]
