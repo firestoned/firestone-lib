@@ -26,6 +26,16 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
+        VERSION=${{ github.event.release.tag.name }}
+        echo "VERSION: $VERSION"
+
+        TEMPFILE=$(mktemp)
+
+        cat pyproject.toml | sed "s/^version = \".*\"/version = \"$VERSION\"/" > $TEMPFILE
+        mv $TEMPFILE pyproject.toml
+
+        poetry lock
+
         python -m pip install --upgrade pip
         python -m pip install poetry
         poetry install
