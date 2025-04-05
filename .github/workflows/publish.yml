@@ -25,9 +25,13 @@ jobs:
       with:
         python-version: '3.x'
     - name: Install dependencies
+      env:
+        VERSION: ${{ github.ref_name }}
       run: |
-        VERSION=${{ github.event.release.tag.name }}
         echo "VERSION: $VERSION"
+
+        python -m pip install --upgrade pip
+        python -m pip install poetry
 
         TEMPFILE=$(mktemp)
 
@@ -35,9 +39,6 @@ jobs:
         mv $TEMPFILE pyproject.toml
 
         poetry lock
-
-        python -m pip install --upgrade pip
-        python -m pip install poetry
         poetry install
     - name: Build package
       run: poetry build
