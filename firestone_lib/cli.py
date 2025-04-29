@@ -192,6 +192,7 @@ AnyDict = FromJsonOrYaml()
 
 
 __all__ = [
+    "api_exc",
     "init_logging",
     "KeyValue",
     "FromJsonOrYaml",
