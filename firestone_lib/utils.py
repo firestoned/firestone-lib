@@ -2,9 +2,8 @@
 Utility module for firestone project and anyone else wanting to use it!
 """
 
-import functools
-
 import asyncio
+from functools import wraps
 
 DEFAULT_SEPARATOR = "_"
 
@@ -12,11 +11,11 @@ DEFAULT_SEPARATOR = "_"
 def click_coro(func):
     """Click coroutine."""
 
+    @wraps(func)
     def wrapper(*args, **kwargs):
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(func(*args, **kwargs))
+        return asyncio.run(func(*args, **kwargs))
 
-    return functools.update_wrapper(wrapper, func)
+    return wrapper
 
 
 def split_capitalize(input_str: str, sep: str = None) -> str:
