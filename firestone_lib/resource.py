@@ -20,7 +20,9 @@ _LOGGER = logging.getLogger(__name__)
 
 def _jsonloader(uri, **kwargs):
     if uri.startswith("file://"):
-        uri = uri[8:]
+        uri = uri[7:]
+    elif uri.startswith("file:"):
+        uri = uri[5:]
 
     with io.open(uri, "r", encoding="utf-8") as fh:
         if uri.endswith(".json"):
