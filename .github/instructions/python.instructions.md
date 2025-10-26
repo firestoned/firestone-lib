@@ -9,7 +9,7 @@ These rules combine firestone-lib conventions with widely accepted Python practi
 They intentionally mirror the upstream Firestone project so moving changes between repositories stays predictable; if you spot a divergence, flag it so we can reconcile both sides.
 
 ## Runtime & Dependencies
-- Target Python **3.9+** as defined in `pyproject.toml`; keep code compatible with the supported range (even if newer features are tempting).
+- Target Python **3.12+** as defined in `pyproject.toml`; keep code compatible with the supported range.
 - Manage dependencies through Poetry and keep `pyproject.toml` and `poetry.lock` in sync when adding or bumping packages.
 
 ## Type Hints & Docstrings
@@ -31,7 +31,9 @@ They intentionally mirror the upstream Firestone project so moving changes betwe
 ## Testing
 - Place tests under `test/` and write them using pytest idioms (`assert`, fixtures, parametrization). Migrating legacy unittest code to pytest is encouraged when you touch it.
 - Include or update tests for any behavioral change and keep them deterministic (use mocks, temp dirs, or fixtures as needed).
-- Validate locally with `poetry run pytest`.
+- Validate locally with `poetry run pytest --cov=firestone_lib --cov-report term-missing`. Keep coverage at, or very close to, 100%—justify any unavoidable exclusions.
+- Run `poetry run pylint firestone_lib test` before submitting; lint failures will block CI.
+- When tests need helper classes or overrides, add minimal docstrings and document any `# pylint: disable=` usage so the reason stays clear.
 
 ## Error Handling & Logging
 - Raise specific exceptions with actionable messages.
@@ -40,3 +42,4 @@ They intentionally mirror the upstream Firestone project so moving changes betwe
 ## Security & Robustness
 - Avoid executing untrusted input and double-check file paths or templates before use.
 - Preserve json/yaml loading safeguards already present in the repo (for example, `safe_load`).
+- Access module-private helpers (such as `_jsonloader`) only from tests, and accompany the call with a comment/pylint waiver that explains the intent.

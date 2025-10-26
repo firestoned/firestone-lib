@@ -19,6 +19,7 @@
 ## Build & Automation
 - Poetry drives installs, builds, and test runs (`poetry install`, `poetry build`, `poetry run pytest`).
 - Continuous integration is handled via `.github/workflows/pr.yml`; expect linting and tests to run on every pull request.
+- Local pre-flight: run `poetry run pylint firestone_lib test` and `poetry run pytest --cov=firestone_lib --cov-report term-missing` before opening a PR. CI enforces both commands, and we aim to keep coverage at 100%.
 
 ## Collaboration Notes
 - Before adding new modules or resources, confirm they fit the existing structure; prefer evolving current packages.
@@ -27,3 +28,5 @@
 
 ## Coding Conventions
 - For language-level expectations (Python 3.9+ compatibility, mandatory type hints, pytest usage, formatting requirements), follow `.github/instructions/python.instructions.md`.
+- When adding tests, include docstrings or inline comments for helper classes/overrides so pylint passes without silencing warnings globally. Use targeted `# pylint: disable=` comments with a short justification when you must access module-private APIs like `_jsonloader`.
+- Resource loaders rely on the current `file://` / `file:` path normalization; keep that behavior intact and update tests accordingly if you touch it.

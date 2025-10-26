@@ -9,6 +9,10 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build:
 
@@ -16,12 +20,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version:
+          - "3.12"
+          - "3.13"
+          - "3.14"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -38,6 +45,11 @@ jobs:
       run: |
         poetry run pytest --cache-clear --cov=firestone_lib test/ > pytest-coverage.txt
     - name: Comment coverage
+      if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
       uses: coroo/pytest-coverage-commentator@v1.0.2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        pytest-coverage: pytest-coverage.txt
     - name: Coverage Badge
+      if: ${{ github.event_name == 'push' }}
       uses: tj-actions/coverage-badge-py@v2

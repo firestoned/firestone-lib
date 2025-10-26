@@ -27,7 +27,7 @@ This library supports companion projects that build on the same patterns:
 ## Installation
 
 ### Prerequisites
-- Python 3.9 or newer (see `pyproject.toml` for the precise compatibility range)
+- Python 3.12 or newer (see `pyproject.toml` for the precise compatibility range)
 - [Poetry](https://python-poetry.org/docs/#installation)
 
 ### From source
