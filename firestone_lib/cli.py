@@ -59,9 +59,7 @@ class CommaDelimitedList(click.ParamType):
             return value
 
         try:
-            return [
-                self.item_type.convert(item, param, ctx) for item in value.split(",")
-            ]
+            return [self.item_type.convert(item, param, ctx) for item in value.split(",")]
         except AttributeError:
             self.fail(f"{value} is not comma-delimited", param, ctx)
 
@@ -175,9 +173,7 @@ class RegexValidator(click.ParamType):
         if self.regex_pattern.match(value):
             return value
         if not self.regex_pattern.match(value):
-            raise AttributeError(
-                f"{value} does not match regex pattern {self.regex_pattern}"
-            )
+            raise AttributeError(f"{value} does not match regex pattern {self.regex_pattern}")
 
 
 IntList = CommaDelimitedList(item_type=click.INT)
